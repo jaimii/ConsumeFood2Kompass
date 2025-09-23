@@ -31,6 +31,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -578,7 +579,7 @@ public class CustomFoodManager {
             return;
         }
 
-        applyExecuteCommands(player, customFood);
+        applyExecuteCommands(player, customFood, 0);
         applySound(player, customFood);
         if (useFoodComponent) {
             checkMaxConsumeCount(player, customFood, itemStack, true);
@@ -694,25 +695,51 @@ public class CustomFoodManager {
         });
     }
 
-    public void applyExecuteCommands(Player player, CustomFood customFood) {
+    public void applyExecuteCommands(Player player, CustomFood customFood, int index) {
+        if (player == null) {
+            return;
+        }
+        if (!player.isOnline()) {
+            return;
+        }
+        List<FoodCommand> commands = customFood.getCommands();
+        if (index >= commands.size()) {
+            return;
+        }
+
+        FoodCommand foodCommand = commands.get(index);
+        String command = foodCommand.getCommand();
+
         boolean usePlaceHolderAPI = plugin.isUsePlaceHolderAPI();
-        customFood.getCommands().forEach(foodCommand -> {
-            String command = foodCommand.getCommand();
-            if (usePlaceHolderAPI) {
-                command = PlaceholderAPI.setPlaceholders(player, command);
-            } else {
-                command = command.replaceAll("%player_name%", player.getName());
+        if (usePlaceHolderAPI) {
+            command = PlaceholderAPI.setPlaceholders(player, command);
+        } else {
+            command = command.replaceAll("%player_name%", player.getName());
+        }
+
+        if (command.startsWith("delay ")) {
+            try {
+                int ticks = Math.max(0, Integer.parseInt(command.split("\\s+")[1]));
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        applyExecuteCommands(player, customFood, index + 1);
+                    }
+                }.runTaskLater(plugin, ticks);
+            } catch (NumberFormatException e) {
+                MessageUtil.sendMessage(Bukkit.getConsoleSender(), "Invalid delay value: " + command);
+                applyExecuteCommands(player, customFood, index + 1);
             }
-            FoodCommand.ExecuteType executeType = foodCommand.getExecuteType();
-            switch (executeType) {
-                case PLAYER -> {
-                    Bukkit.dispatchCommand(player, command);
-                }
-                case CONSOLE -> {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                }
-            }
-        });
+            return;
+        }
+
+        FoodCommand.ExecuteType executeType = foodCommand.getExecuteType();
+        switch (executeType) {
+            case PLAYER -> Bukkit.dispatchCommand(player, command);
+            case CONSOLE -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
+
+        applyExecuteCommands(player, customFood, index + 1);
     }
 
     public void applySound(Player player, CustomFood customFood) {

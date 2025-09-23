@@ -22,19 +22,6 @@ public class FoodPotionEffect {
         this.chance = chance;
     }
 
-    /*
-    private FoodPotionEffect(PotionEffect potionEffect, int chance) {
-        double temp;
-        this.potionEffect = potionEffect;
-        temp = chance / 100.0;
-        if (temp > 1) {
-            temp = 1;
-        }
-        this.chance = temp;
-    }
-
-     */
-
     public double getChance() {
         return chance;
     }
