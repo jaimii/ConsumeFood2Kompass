@@ -85,6 +85,9 @@ public class Common {
 
     public FoodCommand formatToFoodCommand(String format) throws InvalidFormat {
         try {
+            if (format.startsWith("delay ")) {
+                return new FoodCommand(format, FoodCommand.ExecuteType.NONE);
+            }
             String[] split = format.split(":");
             FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
             String c = split[1];

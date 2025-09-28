@@ -1,3 +1,7 @@
+v1.3.1 dev-2 {
+    - Fixed an error that occurred when using delay in FoodCommand
+}
+
 v1.3.1 dev-1 {
     - Added delay function to Command
 

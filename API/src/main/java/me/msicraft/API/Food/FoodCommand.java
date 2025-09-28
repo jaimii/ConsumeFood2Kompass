@@ -3,7 +3,7 @@ package me.msicraft.API.Food;
 public class FoodCommand {
 
     public enum ExecuteType {
-        CONSOLE, PLAYER
+        CONSOLE, PLAYER, NONE
     }
     private final String command;
     private final ExecuteType executeType;
@@ -22,6 +22,9 @@ public class FoodCommand {
     }
 
     public String toFormat() {
+        if (executeType == ExecuteType.NONE) {
+            return command;
+        }
         return executeType.name() + ":" + command;
     }
 
