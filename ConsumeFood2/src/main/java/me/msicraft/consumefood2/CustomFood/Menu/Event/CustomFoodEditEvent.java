@@ -113,10 +113,15 @@ public class CustomFoodEditEvent implements Listener {
                 }
                 case COMMAND -> {
                     try {
-                        String[] split = message.split(":");
-                        FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
-                        String command = split[1];
-                        FoodCommand foodCommand = new FoodCommand(command, executeType);
+                        FoodCommand foodCommand;
+                        if (message.startsWith("delay ")) {
+                            foodCommand = new FoodCommand(message, FoodCommand.ExecuteType.NONE);
+                        } else {
+                            String[] split = message.split(":");
+                            FoodCommand.ExecuteType executeType = FoodCommand.ExecuteType.valueOf(split[0].toUpperCase());
+                            String command = split[1];
+                            foodCommand = new FoodCommand(command, executeType);
+                        }
                         customFood.addCommand(foodCommand);
                     } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {
                         save = false;

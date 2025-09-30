@@ -29,7 +29,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.1</version>
                 <configuration>
-                    <outputDirectory>B:\플러그인\ConsumeFood2\1.3.1\dev-2</outputDirectory>
+                    <outputDirectory>F:\플러그인\ConsumeFood2\1.3.1\dev-3</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -89,6 +89,12 @@
             <artifactId>ConsumeFood</artifactId>
             <version>-2610a9362c-1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.msicraft</groupId>
+            <artifactId>API</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
